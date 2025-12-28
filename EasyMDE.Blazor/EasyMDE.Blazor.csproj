@@ -10,8 +10,9 @@
         <Description>EasyMDE: A simple, beautiful, and embeddable JavaScript Markdown editor. Delightful editing for beginners and experts alike. Features built-in autosaving and spell checking. Now with Blazor bindings.</Description>
         <PackageProjectUrl>https://github.com/LANCommander/EasyMDE.Blazor</PackageProjectUrl>
         <RepositoryUrl>https://github.com/LANCommander/EasyMDE.Blazor</RepositoryUrl>
-        <AssemblyVersion>1.0.0</AssemblyVersion>
-        <FileVersion>1.0.0</FileVersion>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
+        <Version>1.0.1</Version>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
