@@ -1,0 +1,148 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+
+<div class="@Class" style="@Style">
+    <textarea id="@_textareaId" @attributes="AdditionalAttributes">@Value</textarea>
+</div>
+
+@code {
+    private readonly string _textareaId = $"easymde_{Guid.NewGuid():N}";
+
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<EasyMdeEditor>? _dotNetRef;
+    private string? _instanceKey;
+
+    private bool _initialized;
+    private bool _pendingRenderSync;
+    private string? _lastValueAppliedToEditor;
+
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter] public EasyMdeReadOnly ReadOnly { get; set; } = EasyMdeReadOnly.Default;
+    
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    // EasyMDE options (strongly typed wrapper below). If null, defaults apply.
+    [Parameter] public EasyMdeOptions? Options { get; set; }
+
+    // Optional: if you want to be notified (in addition to binding) when user edits
+    [Parameter] public EventCallback<string> OnChange { get; set; }
+    [Parameter] public Func<EasyMdeInputEvent, ValueTask<bool>>? OnInput { get; set; }
+    
+    [Parameter]
+    public IReadOnlyList<EasyMdeKeyRegistration>? InterceptKeys { get; set; }
+
+    /// <summary>
+    /// Called only when a pressed key matches InterceptKeys where NotifyDotNet or AskDotNet is true.
+    /// Return true to allow, false to block (only enforceable if EnforceViaBeforeChange is enabled for that key).
+    /// </summary>
+    [Parameter]
+    public Func<EasyMdeKeyEvent, ValueTask<bool>>? OnKey { get; set; }
+
+    // Capture arbitrary HTML attributes (placeholder, data-*, etc.)
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        // If Value changes from parent, we will sync it into the editor after render.
+        // Avoid syncing before init.
+        if (_initialized)
+        {
+            var normalized = Value ?? "";
+            
+            if (!string.Equals(normalized, _lastValueAppliedToEditor, StringComparison.Ordinal))
+                _pendingRenderSync = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>(
+                "import", $"{NavigationManager.BaseUri}_content/EasyMDE.Blazor/js/easymde-blazor.js");
+
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            _instanceKey = await _module.InvokeAsync<string>(
+                "create",
+                _textareaId,
+                _dotNetRef,
+                Options,
+                new
+                {
+                    interceptKeys = InterceptKeys
+                });
+
+            _initialized = true;
+
+            // Initial value sync (if parent set Value before first render)
+            _pendingRenderSync = true;
+        }
+
+        if (_initialized && _pendingRenderSync && _module is not null)
+        {
+            _pendingRenderSync = false;
+
+            var next = Value ?? "";
+            await _module.InvokeVoidAsync("setValue", _textareaId, next);
+            _lastValueAppliedToEditor = next;
+        }
+    }
+
+    [JSInvokable]
+    public async Task NotifyValueChanged(string value)
+    {
+        // Update local state so subsequent parameter sets don’t bounce it back.
+        _lastValueAppliedToEditor = value;
+
+        if (ValueChanged.HasDelegate)
+            await ValueChanged.InvokeAsync(value);
+
+        if (OnChange.HasDelegate)
+            await OnChange.InvokeAsync(value);
+    }
+
+    [JSInvokable]
+    public async Task<bool> DecideInput(EasyMdeInputEvent inputEvent)
+    {
+        if (OnInput is null)
+            return true;
+
+        return await OnInput(inputEvent);
+    }
+    
+    [JSInvokable]
+    public async Task<bool> HandleKey(EasyMdeKeyEvent keyEvent)
+    {
+        if (OnKey is null) 
+            return true;
+        
+        return await OnKey(keyEvent);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_module is not null)
+            {
+                await _module.InvokeVoidAsync("destroy", _textareaId);
+                await _module.DisposeAsync();
+            }
+        }
+        catch
+        {
+            // Swallow disposal exceptions (typical for disconnects/navigation in Server)
+        }
+        finally
+        {
+            _dotNetRef?.Dispose();
+        }
+    }
+}

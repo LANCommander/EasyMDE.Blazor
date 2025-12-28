@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>EasyMDE.Blazor</Title>
+        <Authors>pathartl</Authors>
+        <Description>EasyMDE: A simple, beautiful, and embeddable JavaScript Markdown editor. Delightful editing for beginners and experts alike. Features built-in autosaving and spell checking. Now with Blazor bindings.</Description>
+        <PackageProjectUrl>https://github.com/LANCommander/EasyMDE.Blazor</PackageProjectUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/LANCommander/EasyMDE.Blazor/refs/heads/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/LANCommander/EasyMDE.Blazor</RepositoryUrl>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+    </PropertyGroup>
+
+    <Target Name="NpmRestore" BeforeTargets="Build" Condition="Exists('$(MSBuildProjectDirectory)\package.json')">
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npm ci" />
+    </Target>
+
+    <Target Name="BuildEasyMdeAssets" BeforeTargets="Build"
+            DependsOnTargets="NpmRestore"
+            Condition="Exists('$(MSBuildProjectDirectory)\build-assets.mjs')">
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npm run build:assets" />
+    </Target>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2"/>
+    </ItemGroup>
+</Project>

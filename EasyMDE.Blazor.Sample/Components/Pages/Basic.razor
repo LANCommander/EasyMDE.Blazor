@@ -1,0 +1,21 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<EasyMdeEditor Options="_options"></EasyMdeEditor>
+
+@code {
+
+    readonly EasyMdeOptions _options = new()
+    {
+        Placeholder = "Enter markdown...",
+        SpellChecker = false,
+        MinHeight = "300px",
+        RenderingConfig = new EasyMdeRenderingConfig()
+        {
+            CodeSyntaxHighlighting = true,
+        },
+    };
+
+}

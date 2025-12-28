@@ -1,0 +1,30 @@
+namespace EasyMDE.Blazor;
+
+public enum ToolbarIcon
+{
+    Bold,
+    Italic,
+    Strikethrough,
+    Heading,
+    HeadingSmaller,
+    HeadingBigger,
+    Heading1,
+    Heading2,
+    Heading3,
+    Code,
+    Quote,
+    UnorderedList,
+    OrderedList,
+    CleanBlock,
+    Link,
+    Image,
+    Table,
+    HorizontalRule,
+    Preview,
+    SideBySide,
+    Fullscreen,
+    Guide,
+    Undo,
+    Redo,
+    UploadImage,
+}

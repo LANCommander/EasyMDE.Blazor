@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="EasyMDE.Blazor/EasyMDE.Blazor.csproj" />
+  <Project Path="EasyMDE.Blazor.Sample/EasyMDE.Blazor.Sample.csproj" />
+</Solution>

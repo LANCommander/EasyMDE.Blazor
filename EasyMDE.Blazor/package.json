@@ -1,0 +1,14 @@
+{
+  "name": "easymde.blazor",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "restore": "npm ci",
+    "build:assets": "node ./build-assets.mjs"
+  },
+  "author": "Pat Hartl",
+  "license": "MIT",
+  "dependencies": {
+    "easymde": "^2.20.0"
+  }
+}
