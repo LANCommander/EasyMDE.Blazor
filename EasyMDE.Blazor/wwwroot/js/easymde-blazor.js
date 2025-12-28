@@ -82,14 +82,14 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
         if (!reg) return; // fast path: do nothing
 
         // If purely block in JS (e.g. Enter), do it here, no .NET involved.
-        if (reg.BlockInJs) {
+        if (reg.blockInJs) {
             e.preventDefault();
             e.stopPropagation();
             return;
         }
 
         // If we don't have .NET callback, nothing else to do.
-        if (!reg.NotifyDotNet && !reg.AskDotNet) return;
+        if (!reg.notifyDotNet && !reg.askDotNet) return;
 
         const evt = {
             key: e.key,
@@ -101,7 +101,7 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
         };
 
         // Notify only (fire-and-forget decision irrelevant)
-        if (reg.NotifyDotNet && !reg.AskDotNet) {
+        if (reg.notifyDotNet && !reg.askDotNet) {
             // We cannot await if we don't need a decision; but we can still await safely.
             try { await entry.dotNetRef.invokeMethodAsync("HandleKey", evt); } catch { }
             return;
@@ -109,9 +109,9 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
 
         // Ask .NET for allow/deny:
         // IMPORTANT: keydown is synchronous, so you can't reliably wait and then prevent.
-        // If EnforceViaBeforeChange is true, we arm a one-shot beforeChange gate that will cancel/reapply.
-        if (reg.AskDotNet) {
-            if (reg.EnforceViaBeforeChange) {
+        // If enforceViaBeforeChange is true, we arm a one-shot beforeChange gate that will cancel/reapply.
+        if (reg.askDotNet) {
+            if (reg.enforceViaBeforeChange) {
                 // Arm the gate for the very next change caused by this key.
                 // Token helps avoid stale answers.
                 const token = crypto.randomUUID();
