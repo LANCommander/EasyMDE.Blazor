@@ -65,7 +65,7 @@
         if (firstRender)
         {
             _module = await JS.InvokeAsync<IJSObjectReference>(
-                "import", $"{NavigationManager.BaseUri}_content/EasyMDE.Blazor/js/easymde-blazor.js");
+                "import", $"{NavigationManager.BaseUri}_content/EasyMDE.Blazor/js/easymde-blazor.js?v={typeof(EasyMdeEditor).Assembly.GetName().Version!.ToString()}");
 
             _dotNetRef = DotNetObjectReference.Create(this);
 
