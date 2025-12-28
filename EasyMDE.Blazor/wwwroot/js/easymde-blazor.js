@@ -20,11 +20,11 @@ function _keySignature(e) {
 
 function _regSignature(reg) {
     const parts = [];
-    if (reg.Ctrl) parts.push("Ctrl");
-    if (reg.Alt) parts.push("Alt");
-    if (reg.Shift) parts.push("Shift");
-    if (reg.Meta) parts.push("Meta");
-    parts.push(reg.Key);
+    if (reg.ctrl) parts.push("Ctrl");
+    if (reg.alt) parts.push("Alt");
+    if (reg.shift) parts.push("Shift");
+    if (reg.meta) parts.push("Meta");
+    parts.push(reg.key);
     return parts.join("+");
 }
 
@@ -35,7 +35,8 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
     const instanceKey = textarea.id || crypto.randomUUID();
     textarea.dataset.easymdeKey = instanceKey;
 
-    if (_instances.has(instanceKey)) return instanceKey;
+    if (_instances.has(instanceKey)) 
+        return instanceKey;
 
     const editor = new window.EasyMDE({ ...(options || {}), element: textarea });
 
@@ -57,6 +58,7 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
 
     // Build key map from registrations
     const regs = (interopOptions && interopOptions.interceptKeys) || [];
+    
     for (const reg of regs) {
         entry.keyMap.set(_regSignature(reg), reg);
     }
@@ -221,8 +223,7 @@ export function destroy(textareaElementOrId) {
         if (entry.keydownHandler)
             entry.editor.codemirror.off("keydown", entry.keydownHandler);
         
-        if (entry.beforeChangeHandler) 
-            
+        if (entry.beforeChangeHandler)
             entry.editor.codemirror.off("beforeChange", entry.beforeChangeHandler);
 
         entry.editor.toTextArea();
