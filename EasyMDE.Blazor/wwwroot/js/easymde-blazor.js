@@ -85,7 +85,6 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
         if (reg.blockInJs) {
             e.preventDefault();
             e.stopPropagation();
-            return;
         }
 
         // If we don't have .NET callback, nothing else to do.
