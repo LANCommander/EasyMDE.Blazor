@@ -1,0 +1,30 @@
+﻿@page "/DataBinding"
+@rendermode InteractiveServer
+
+<PageTitle>Data Binding</PageTitle>
+
+<EasyMdeEditor @bind-Value="_value" Options="_options"></EasyMdeEditor>
+
+<InputTextArea @bind-Value="_value"></InputTextArea>
+<button @onclick="Clear">Clear</button>
+
+@code {
+    string _value = String.Empty;
+
+    readonly EasyMdeOptions _options = new()
+    {
+        Placeholder = "Enter markdown...",
+        SpellChecker = false,
+        MinHeight = "300px",
+        RenderingConfig = new EasyMdeRenderingConfig()
+        {
+            CodeSyntaxHighlighting = true,
+        },
+    };
+
+    void Clear()
+    {
+        _value = String.Empty;
+    }
+
+}
