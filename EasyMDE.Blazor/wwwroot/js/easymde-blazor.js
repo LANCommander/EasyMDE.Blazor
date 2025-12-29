@@ -30,9 +30,12 @@ function _regSignature(reg) {
 
 export function create(textareaElementOrId, dotNetRef, options, interopOptions) {
     const textarea = _resolveElement(textareaElementOrId);
-    if (!textarea) throw new Error("EasyMDE textarea element not found.");
+    
+    if (!textarea)
+        throw new Error("EasyMDE textarea element not found.");
 
     const instanceKey = textarea.id || crypto.randomUUID();
+    
     textarea.dataset.easymdeKey = instanceKey;
 
     if (_instances.has(instanceKey)) 
@@ -65,30 +68,37 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
 
     // Standard change propagation
     const onChange = async () => {
-        if (entry.suppress) return;
+        if (entry.suppress)
+            return;
 
         const current = editor.value();
-        if (current === entry.lastSent) return;
+        
+        if (current === entry.lastSent)
+            return;
 
         entry.lastSent = current;
+        
         await dotNetRef.invokeMethodAsync("NotifyValueChanged", current);
     };
+    
     editor.codemirror.on("change", onChange);
 
     // Keydown filter
     const onKeyDown = async (cm, e) => {
         const sig = _keySignature(e);
         const reg = entry.keyMap.get(sig);
-        if (!reg) return; // fast path: do nothing
-
-        // If purely block in JS (e.g. Enter), do it here, no .NET involved.
+        
+        if (!reg)
+            return; // fast path: do nothing
+        
         if (reg.blockInJs) {
             e.preventDefault();
             e.stopPropagation();
         }
 
         // If we don't have .NET callback, nothing else to do.
-        if (!reg.notifyDotNet && !reg.askDotNet) return;
+        if (!reg.notifyDotNet && !reg.askDotNet)
+            return;
 
         const evt = {
             key: e.key,
@@ -141,7 +151,8 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
 
     // Optional: reliable enforcement via beforeChange when pendingGate is armed
     const onBeforeChange = (cm, change) => {
-        if (!entry.pendingGate) return;
+        if (!entry.pendingGate)
+            return;
 
         const gate = entry.pendingGate;
 
@@ -168,17 +179,25 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
 
 export function setValue(textareaElementOrId, value) {
     const textarea = _resolveElement(textareaElementOrId);
-    if (!textarea) return;
+    
+    if (!textarea)
+        return;
 
     const key = textarea.dataset.easymdeKey;
-    if (!key) return;
+    
+    if (!key)
+        return;
 
     const entry = _instances.get(key);
-    if (!entry) return;
+    
+    if (!entry)
+        return;
 
     const next = value ?? "";
     const current = entry.editor.value();
-    if (current === next) return;
+    
+    if (current === next)
+        return;
 
     entry.suppressInput = true;
     try {
@@ -191,13 +210,19 @@ export function setValue(textareaElementOrId, value) {
 
 export function getValue(textareaElementOrId) {
     const textarea = _resolveElement(textareaElementOrId);
-    if (!textarea) return "";
+    
+    if (!textarea) 
+        return "";
 
     const key = textarea.dataset.easymdeKey;
-    if (!key) return textarea.value ?? "";
+    
+    if (!key)
+        return textarea.value ?? "";
 
     const entry = _instances.get(key);
-    if (!entry) return textarea.value ?? "";
+    
+    if (!entry)
+        return textarea.value ?? "";
 
     return entry.editor.value() ?? "";
 }
