@@ -177,6 +177,50 @@ export function create(textareaElementOrId, dotNetRef, options, interopOptions) 
     return instanceKey;
 }
 
+export function setOption(textareaElementOrId, optionKey, optionValue) {
+    const textarea = _resolveElement(textareaElementOrId);
+    
+    if (!textarea)
+        return;
+    
+    const key = textarea.dataset.easymdeKey;
+    
+    if (!key)
+        return;
+    
+    const entry = _instances.get(key);
+    
+    if (!entry)
+        return;
+    
+    const next = optionValue ?? "";
+    const current = entry.editor.codemirror.getOption(optionKey);
+    
+    if (current === next)
+        return;
+    
+    entry.editor.codemirror.setOption(optionKey, optionValue);
+}
+
+export function getOption(textareaElementOrId, optionKey) {
+    const textarea = _resolveElement(textareaElementOrId);
+    
+    if (!textarea)
+        return;
+    
+    const key = textarea.dataset.easymdeKey;
+    
+    if (!key)
+        return;
+    
+    const entry = _instances.get(key);
+    
+    if (!entry)
+        return;
+    
+    return entry.editor.codemirror.getOption(optionKey);
+}
+
 export function setValue(textareaElementOrId, value) {
     const textarea = _resolveElement(textareaElementOrId);
     

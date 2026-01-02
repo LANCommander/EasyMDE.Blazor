@@ -58,12 +58,6 @@ public sealed class EasyMdeOptionsJsonConverter : JsonConverter<EasyMdeOptions>
             JsonSerializer.Serialize(writer, value.Status, options);
         }
 
-        if (value.ReadOnly.Kind != EasyMdeReadOnly.KindType.Default)
-        {
-            writer.WritePropertyName("readOnly");
-            JsonSerializer.Serialize(writer, value.ReadOnly, options);
-        }
-
         if (value.PreviewClass.Kind != EasyMdePreviewClass.KindType.Default)
         {
             writer.WritePropertyName("previewClass");

@@ -40,7 +40,6 @@ public sealed class EasyMdeOptions
 
     public EasyMdeToolbar Toolbar { get; set; } = EasyMdeToolbar.Default;
     public EasyMdeStatus Status { get; set; } = EasyMdeStatus.Default;
-    public EasyMdeReadOnly ReadOnly { get; set; } = EasyMdeReadOnly.Default;
     public EasyMdePreviewClass PreviewClass { get; set; } = EasyMdePreviewClass.Default;
 
     public EasyMdeBlockStyles? BlockStyles { get; set; }

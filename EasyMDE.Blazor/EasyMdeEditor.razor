@@ -20,8 +20,11 @@
 
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
-
-    [Parameter] public EasyMdeReadOnly ReadOnly { get; set; } = EasyMdeReadOnly.Default;
+    
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool SpellChecker { get; set; } = true;
+    [Parameter] public int TabSize { get; set; } = 2;
+    [Parameter] public bool ReadOnly { get; set; }
     
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Style { get; set; }
@@ -46,6 +49,14 @@
     // Capture arbitrary HTML attributes (placeholder, data-*, etc.)
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await SetOption("placeholder", Placeholder);
+        await SetOption("spellChecker", SpellChecker);
+        await SetOption("tabSize", TabSize);
+        await SetOption("readOnly", ReadOnly);
+    }
 
     protected override void OnParametersSet()
     {
@@ -93,6 +104,12 @@
             await _module.InvokeVoidAsync("setValue", _textareaId, next);
             _lastValueAppliedToEditor = next;
         }
+    }
+
+    private async Task SetOption(string key, object? value)
+    {
+        if (_initialized && _module is not null)
+            await _module.InvokeVoidAsync("setOption", _textareaId, key, value);
     }
 
     [JSInvokable]
