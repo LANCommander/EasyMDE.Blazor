@@ -159,6 +159,8 @@
         }
         finally
         {
+            _module = null;
+            
             _dotNetRef?.Dispose();
         }
     }
